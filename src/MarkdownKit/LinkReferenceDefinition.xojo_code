@@ -8,7 +8,7 @@ Protected Class LinkReferenceDefinition
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(name As String, destination As String, title As String)
+		Sub Constructor(name As Text, destination As Text, title As Text)
 		  Self.Name = name
 		  Self.Destination = destination
 		  Self.Title = title
@@ -18,15 +18,15 @@ Protected Class LinkReferenceDefinition
 
 
 	#tag Property, Flags = &h0
-		Destination As String
+		Destination As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Name As String
+		Name As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Title As String
+		Title As Text
 	#tag EndProperty
 
 
@@ -35,7 +35,9 @@ Protected Class LinkReferenceDefinition
 			Name="Name"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
@@ -43,12 +45,15 @@ Protected Class LinkReferenceDefinition
 			Group="ID"
 			InitialValue="-2147483648"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -56,6 +61,7 @@ Protected Class LinkReferenceDefinition
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
@@ -63,21 +69,31 @@ Protected Class LinkReferenceDefinition
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Destination"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Title"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

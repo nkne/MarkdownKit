@@ -68,14 +68,14 @@ Protected Class Block
 		  Case MarkdownKit.BlockType.HtmlBlock
 		    // ===== HTML block =====
 		    // Get the characters from the current line offset to the end of the line.
-		    Dim tmp() As String
-		    Dim limit As Integer = Xojo.Math.Min(line.Chars.LastRowIndex, startPos + len - 1)
+		    Dim tmp() As Text
+		    Dim limit As Integer = Xojo.Math.Min(line.Chars.Ubound, startPos + len - 1)
 		    For i As Integer = startPos To limit
-		      tmp.AddRow(line.Chars(i))
+		      tmp.Append(line.Chars(i))
 		    Next i
 		    
 		    // Add a newline to the end of this line.
-		    tmp.AddRow(&u000A)
+		    tmp.Append(&u000A)
 		    
 		    // Append the characters of this line to this block's RawChars array.
 		    Chars.AppendArray(tmp)
@@ -86,46 +86,46 @@ Protected Class Block
 		    If len <= 0 Then Raise New MarkdownKit.MarkdownException("Unexpected blank line")
 		    
 		    // Get the characters from the current line offset to the end of the line.
-		    Dim limit As Integer = Xojo.Math.Min(line.Chars.LastRowIndex, startPos + len - 1)
-		    Dim tmp() As String
+		    Dim limit As Integer = Xojo.Math.Min(line.Chars.Ubound, startPos + len - 1)
+		    Dim tmp() As Text
 		    For i As Integer = startPos To limit
-		      tmp.AddRow(line.Chars(i))
+		      tmp.Append(line.Chars(i))
 		    Next i
 		    
 		    // Strip leading and trailing whitespace from this line.
 		    StripLeadingWhitespace(tmp)
 		    
 		    // Add a newline to the end of this line.
-		    tmp.AddRow(&u000A)
+		    tmp.Append(&u000A)
 		    
 		    // Append the characters of this line to this paragraph's RawChars array.
 		    Chars.AppendArray(tmp)
 		    
 		  Else
 		    // ===== All other block types ====
-		    Dim tmp() As String
+		    Dim tmp() As Text
 		    If len <= 0 Then
 		      // Blank line.
 		      Dim b As New MarkdownKit.Block(BlockType.TextBlock, Xojo.Core.WeakRef.Create(Self))
 		      b.Chars = tmp
-		      Children.AddRow(b)
+		      Children.Append(b)
 		      Return
 		    End If
 		    
 		    // Get the characters from the current line offset to the end of the line.
 		    // Remember to account for missing spaces.
 		    For i As Integer = 1 To line.RemainingSpaces
-		      tmp.AddRow(" ")
+		      tmp.Append(" ")
 		    Next i
-		    Dim limit As Integer = Xojo.Math.Min(line.Chars.LastRowIndex, startPos + len - 1)
+		    Dim limit As Integer = Xojo.Math.Min(line.Chars.Ubound, startPos + len - 1)
 		    For i As Integer = startPos To limit
-		      tmp.AddRow(line.Chars(i))
+		      tmp.Append(line.Chars(i))
 		    Next i
 		    
 		    // Add the text as a text block.
 		    Dim b As New MarkdownKit.Block(BlockType.TextBlock, Xojo.Core.WeakRef.Create(Self))
 		    b.Chars = tmp
-		    Children.AddRow(b)
+		    Children.Append(b)
 		  End Select
 		  
 		End Sub
@@ -141,20 +141,20 @@ Protected Class Block
 		      Select Case Parent.Chars(i)
 		      Case &u000A
 		        // Newlines are normalised to spaces.
-		        chars.AddRow(&u0020)
+		        chars.Append(&u0020)
 		      Case &u0020
-		        chars.AddRow(&u0020)
+		        chars.Append(&u0020)
 		      Else
 		        seenNonSpace = True
-		        chars.AddRow(Parent.Chars(i))
+		        chars.Append(Parent.Chars(i))
 		      End Select
 		    Next i
 		    
 		    // If the resulting content both begins and ends with a space character, but does not 
 		    // consist entirely of space characters, a single space character is removed from the 
 		    // front and back.
-		    If seenNonSpace And Chars.LastRowIndex >= 1 And Chars(0) = &u0020 And Chars(Chars.LastRowIndex) = &u0020 Then
-		      Chars.RemoveRowAt(0)
+		    If seenNonSpace And Chars.Ubound >= 1 And Chars(0) = &u0020 And Chars(Chars.Ubound) = &u0020 Then
+		      Chars.Remove(0)
 		      Call Chars.Pop
 		    End If
 		    
@@ -163,12 +163,12 @@ Protected Class Block
 		    
 		  Case MarkdownKit.BlockType.InlineHTML
 		    For i As Integer = Self.StartPos To Self.EndPos
-		      chars.AddRow(Parent.Chars(i))
+		      chars.Append(Parent.Chars(i))
 		    Next i
 		    
 		  Case MarkdownKit.BlockType.InlineText
 		    For x As Integer = Self.StartPos To Self.EndPos
-		      Self.Chars.AddRow(Self.Parent.Chars(x))
+		      Self.Chars.Append(Self.Parent.Chars(x))
 		    Next x
 		    
 		    Self.IsOpen = False
@@ -269,11 +269,11 @@ Protected Class Block
 		      // Remember to account for missing spaces.
 		      Dim i As Integer
 		      For i = 1 To line.RemainingSpaces
-		        Chars.AddRow(" ")
+		        Chars.Append(" ")
 		      Next i
-		      Dim limit As Integer = Xojo.Math.Min(line.Chars.LastRowIndex, line.NextNWS + len - 1)
+		      Dim limit As Integer = Xojo.Math.Min(line.Chars.Ubound, line.NextNWS + len - 1)
 		      For i = line.NextNWS To limit
-		        Chars.AddRow(line.Chars(i))
+		        Chars.Append(line.Chars(i))
 		      Next i
 		    End If
 		    
@@ -283,38 +283,38 @@ Protected Class Block
 		      // The first child (if present) is the info string. It may be empty.
 		      Dim tb As MarkdownKit.Block = FirstChild
 		      If Not tb.Chars.IsBlank Then
-		        InfoString = Join(tb.Chars, "").Trim
+		        InfoString = Text.Join(tb.Chars, "").Trim
 		        InfoString = Utilities.ReplaceEntities(InfoString)
 		        Utilities.Unescape(InfoString)
 		      End If
-		      Children.RemoveRowAt(0)
+		      Children.Remove(0)
 		    End If
 		    
 		  Case MarkdownKit.BlockType.HtmlBlock
 		    // ===== HTML block =====
-		    If Chars.LastRowIndex < 0 Then Return
-		    If Chars(Chars.LastRowIndex) = &u000A Then Call Chars.Pop
+		    If Chars.Ubound < 0 Then Return
+		    If Chars(Chars.Ubound) = &u000A Then Call Chars.Pop
 		    
 		  Case MarkdownKit.BlockType.IndentedCode
 		    // ===== Indented code =====
 		    // Blank lines preceding or following an indented code block are not included in it.
-		    Dim limit As Integer = Children.LastRowIndex
+		    Dim limit As Integer = Children.Ubound
 		    Dim b As MarkdownKit.Block
 		    // Leading blank lines...
 		    For i As Integer = 0 to limit
 		      b = Children(i)
 		      If b.Chars.IsBlank Then
-		        Children.RemoveRowAt(0)
+		        Children.Remove(0)
 		      Else
 		        Exit
 		      End If
 		    Next i
 		    // Trailing blank lines...
-		    If Children.LastRowIndex > -1 Then
-		      For i As Integer = Children.LastRowIndex DownTo 0
+		    If Children.Ubound > -1 Then
+		      For i As Integer = Children.Ubound DownTo 0
 		        b = Children(i)
 		        If b.Chars.IsBlank Then
-		          Children.RemoveRowAt(i)
+		          Children.Remove(i)
 		        Else
 		          Exit
 		        End If
@@ -354,7 +354,7 @@ Protected Class Block
 		    Wend
 		    
 		    Dim i As Integer
-		    Dim childrenUbound As Integer = Self.Children.LastRowIndex
+		    Dim childrenUbound As Integer = Self.Children.Ubound
 		    For i = 0 To childrenUbound
 		      Self.Children(i).IsChildOfTightList = Self.ListData.IsTight
 		    Next i
@@ -362,41 +362,41 @@ Protected Class Block
 		  Case MarkdownKit.BlockType.ListItem
 		    // ===== List items =====
 		    Dim i As Integer
-		    Dim childrenUbound As Integer = Self.Children.LastRowIndex
+		    Dim childrenUbound As Integer = Self.Children.Ubound
 		    For i = 0 To childrenUbound
 		      Self.Children(i).IsChildOfListItem = True
 		    Next i
 		    
 		  Case MarkdownKit.BlockType.Paragraph
 		    // ===== Paragraph blocks =====
-		    If Chars.LastRowIndex < 0 Then Return
+		    If Chars.Ubound < 0 Then Return
 		    
 		    StripTrailingWhitespace(Chars)
 		    
 		    Dim origCount As Integer
-		    While Chars.LastRowIndex >= 3 And Chars(0) = "["
+		    While Chars.Ubound >= 3 And Chars(0) = "["
 		      // Cache the size of the chars array now as it will change if a reference is found.
-		      origCount = Chars.LastRowIndex
+		      origCount = Chars.Ubound
 		      BlockScanner.ScanLinkReferenceDefinition(Chars, MarkdownKit.Document(Self.Root))
-		      If origCount = Chars.LastRowIndex Then Exit // No more reference links found.
+		      If origCount = Chars.Ubound Then Exit // No more reference links found.
 		    Wend
 		    
 		    // Do we need to remove this paragraph entirely? This occurs when its only content 
 		    // was a reference link.
-		    If Chars.LastRowIndex = -1 Then Self.Parent.RemoveChild(Self)
+		    If Chars.Ubound = -1 Then Self.Parent.RemoveChild(Self)
 		    
 		  Case MarkdownKit.BlockType.SetextHeading
 		    // ===== Setext heading =====
-		    If Chars.LastRowIndex < 0 Then Return
+		    If Chars.Ubound < 0 Then Return
 		    
 		    StripTrailingWhitespace(Chars)
 		    
 		    Dim origCount As Integer
-		    While Chars.LastRowIndex >= 3 And Chars(0) = "["
+		    While Chars.Ubound >= 3 And Chars(0) = "["
 		      // Cache the size of the chars array now as it will change if a reference is found.
-		      origCount = Chars.LastRowIndex
+		      origCount = Chars.Ubound
 		      BlockScanner.ScanLinkReferenceDefinition(Chars, MarkdownKit.Document(Self.Root))
-		      If origCount = Chars.LastRowIndex Then Exit // No more reference links found.
+		      If origCount = Chars.Ubound Then Exit // No more reference links found.
 		    Wend
 		    
 		  End Select
@@ -408,7 +408,7 @@ Protected Class Block
 		Function FirstChild() As MarkdownKit.Block
 		  // Return the first child of this Block. Nil otherwise.
 		  
-		  If Children.LastRowIndex > -1 Then
+		  If Children.Ubound > -1 Then
 		    Return Children(0)
 		  Else
 		    Return Nil
@@ -422,8 +422,8 @@ Protected Class Block
 		Function LastChild() As MarkdownKit.Block
 		  // Return the last child of htis Block. Nil otherwise.
 		  
-		  If Children.LastRowIndex >- 1 Then
-		    Return Children(Children.LastRowIndex)
+		  If Children.Ubound >- 1 Then
+		    Return Children(Children.Ubound)
 		  Else
 		    Return Nil
 		  End If
@@ -437,7 +437,7 @@ Protected Class Block
 		  
 		  Dim myIndex As Integer = Self.Parent.Children.IndexOf(Self)
 		  If myIndex = -1 Then Return Nil
-		  If myIndex = Self.Parent.Children.LastRowIndex Then
+		  If myIndex = Self.Parent.Children.Ubound Then
 		    Return Nil
 		  Else
 		    Return Self.Parent.Children(myIndex + 1)
@@ -451,13 +451,13 @@ Protected Class Block
 		  // Only looks at the top level children of this block.
 		  
 		  Dim childIndex As Integer = Children.IndexOf(child)
-		  If childIndex <> -1 Then Children.RemoveRowAt(childIndex)
+		  If childIndex <> -1 Then Children.Remove(childIndex)
 		End Sub
 	#tag EndMethod
 
 
 	#tag Property, Flags = &h0
-		Chars() As String
+		Chars() As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0, Description = 5468697320426C6F636B2773206368696C6420426C6F636B732028696620616E79292E
@@ -465,7 +465,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Delimiter As String
+		Delimiter As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -473,7 +473,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Destination As String
+		Destination As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -481,7 +481,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		FenceChar As String
+		FenceChar As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -497,7 +497,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		InfoString As String
+		InfoString As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -521,7 +521,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Label As String
+		Label As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -537,7 +537,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Name As String
+		Name As Text
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -575,7 +575,7 @@ Protected Class Block
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Title As String
+		Title As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -690,39 +690,6 @@ Protected Class Block
 			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="Type"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="MarkdownKit.BlockType"
-			EditorType="Enum"
-			#tag EnumValues
-				"0 - Document"
-				"1 - BlockQuote"
-				"2 - List"
-				"3 - ListItem"
-				"4 - FencedCode"
-				"5 - IndentedCode"
-				"6 - HtmlBlock"
-				"7 - Paragraph"
-				"8 - AtxHeading"
-				"9 - SetextHeading"
-				"10 - ThematicBreak"
-				"11 - ReferenceDefinition"
-				"12 - Block"
-				"13 - TextBlock"
-				"14 - Softbreak"
-				"15 - Hardbreak"
-				"16 - InlineText"
-				"17 - Emphasis"
-				"18 - Strong"
-				"19 - Codespan"
-				"20 - InlineHTML"
-				"21 - InlineLink"
-				"22 - InlineImage"
-			#tag EndEnumValues
-		#tag EndViewProperty
-		#tag ViewProperty
 			Name="Level"
 			Visible=false
 			Group="Behavior"
@@ -735,8 +702,8 @@ Protected Class Block
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="FenceLength"
@@ -759,40 +726,40 @@ Protected Class Block
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Destination"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Label"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Title"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Delimiter"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="DelimiterLength"

@@ -2,18 +2,18 @@
 Protected Class ASTRenderer
 Implements Global.MarkdownKit.IRenderer
 	#tag Method, Flags = &h21
-		Private Function CurrentIndent() As String
+		Private Function CurrentIndent() As Text
 		  // Given the current indentation level (specified by mCurrentIndent), this 
 		  // method returns mCurrentIndent * 4 number of spaces as Text.
 		  
 		  If Not Pretty Then Return ""
 		  
 		  Dim numSpaces As Integer = mCurrentIndent * kSpacesPerIndent
-		  Dim tmp() As String
+		  Dim tmp() As Text
 		  For i As Integer = 1 To numSpaces
-		    tmp.AddRow(" ")
+		    tmp.Append(" ")
 		  Next i
-		  Return Join(tmp, "")
+		  Return Text.Join(tmp, "")
 		  
 		End Function
 	#tag EndMethod
@@ -25,7 +25,7 @@ Implements Global.MarkdownKit.IRenderer
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function EncodePredefinedEntities(t As String) As String
+		Private Function EncodePredefinedEntities(t As Text) As Text
 		  // Encodes the 5 predefined entities to make them XML-safe.
 		  // https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references#Predefined_entities_in_XML
 		  
@@ -47,7 +47,7 @@ Implements Global.MarkdownKit.IRenderer
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function TransformWhitespace(t As String) As String
+		Private Function TransformWhitespace(t As Text) As Text
 		  t = t.ReplaceAll(" ", "•")
 		  t = t.ReplaceAll(&u0009, "→")
 		  t = t.ReplaceAll(&u000A, "⮐")
@@ -61,9 +61,9 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitAtxHeading(atx As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + _
+		  mOutput.Append(CurrentIndent + _
 		  "<heading level=" + """" + atx.Level.ToText + """" +  ">")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In atx.Children
 		    IncreaseIndent
@@ -71,8 +71,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</heading>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</heading>")
+		  mOutput.Append(EOL)
 		  
 		End Sub
 	#tag EndMethod
@@ -81,8 +81,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitBlock(b As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<block>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<block>")
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In b.Children
 		    IncreaseIndent
@@ -90,8 +90,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</block>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</block>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -99,8 +99,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitBlockQuote(bq As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<block_quote>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<block_quote>")
+		  mOutput.Append(EOL)
 		  
 		  For Each b As MarkdownKit.Block In bq.Children
 		    IncreaseIndent
@@ -108,8 +108,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next b
 		  
-		  mOutput.AddRow(CurrentIndent + "</block_quote>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</block_quote>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -117,10 +117,10 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitCodespan(cs As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<code>")
-		  mOutput.AddRow(Join(cs.Chars, ""))
-		  mOutput.AddRow("</code>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<code>")
+		  mOutput.Append(Text.Join(cs.Chars, ""))
+		  mOutput.Append("</code>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -128,8 +128,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitDocument(d As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<document>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<document>")
+		  mOutput.Append(EOL)
 		  
 		  For Each b As MarkdownKit.Block In d.Children
 		    IncreaseIndent
@@ -137,23 +137,23 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next b
 		  
-		  mOutput.AddRow(CurrentIndent + "</document>")
+		  mOutput.Append(CurrentIndent + "</document>")
 		  
 		  // Display the reference link map.
 		  If ListReferences And d.ReferenceMap.Count > 0 Then
 		    // Since iterating through a dictionary does not guarantee order, 
 		    // we will get the keys (definition names) as an array and sort 
 		    // them alphabetically.
-		    Dim keys() As String
+		    Dim keys() As Text
 		    For Each entry As Xojo.Core.DictionaryEntry In d.ReferenceMap
-		      keys.AddRow(entry.Key)
+		      keys.Append(entry.Key)
 		    Next entry
 		    keys.Sort
 		    
-		    mOutput.AddRow(EOL)
-		    mOutput.AddRow(EOL)
+		    mOutput.Append(EOL)
+		    mOutput.Append(EOL)
 		    DecreaseIndent
-		    For i As Integer = 0 To keys.LastRowIndex
+		    For i As Integer = 0 To keys.Ubound
 		      IncreaseIndent
 		      MarkdownKit.LinkReferenceDefinition(d.ReferenceMap.Value(keys(i))).Accept(Self)
 		      DecreaseIndent
@@ -167,8 +167,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitEmphasis(e As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<emph>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<emph>")
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In e.Children
 		    IncreaseIndent
@@ -176,8 +176,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</emph>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</emph>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -185,28 +185,28 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitFencedCode(fc As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  Dim info As String = If(fc.InfoString <> "", " info=" + """" + fc.InfoString + """", "")
+		  Dim info As Text = If(fc.InfoString <> "", " info=" + """" + fc.InfoString + """", "")
 		  
-		  mOutput.AddRow(CurrentIndent + "<fenced_code_block" + _
+		  mOutput.Append(CurrentIndent + "<fenced_code_block" + _
 		  If(info <> "", info, "") + ">")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(EOL)
 		  
-		  Dim content As String
+		  Dim content As Text
 		  For Each b As MarkdownKit.Block In fc.Children
 		    IncreaseIndent
 		    
-		    mOutput.AddRow("<text>")
-		    content = Join(b.Chars, "")
+		    mOutput.Append("<text>")
+		    content = Text.Join(b.Chars, "")
 		    If ShowWhitespace Then content = TransformWhitespace(content)
-		    mOutput.AddRow(content)
-		    mOutput.AddRow("</text>")
-		    mOutput.AddRow(EOL)
+		    mOutput.Append(content)
+		    mOutput.Append("</text>")
+		    mOutput.Append(EOL)
 		    
 		    DecreaseIndent
 		  Next b
 		  
-		  mOutput.AddRow(CurrentIndent + "</fenced_code_block>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</fenced_code_block>")
+		  mOutput.Append(EOL)
 		  
 		End Sub
 	#tag EndMethod
@@ -217,8 +217,8 @@ Implements Global.MarkdownKit.IRenderer
 		  
 		  #Pragma Unused hb
 		  
-		  mOutput.AddRow(CurrentIndent + "<linebreak />")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<linebreak />")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -226,17 +226,17 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitHTMLBlock(h As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<html_block>")
+		  mOutput.Append(CurrentIndent + "<html_block>")
 		  
-		  Dim content As String = Join(h.Chars, "")
+		  Dim content As Text = Text.Join(h.Chars, "")
 		  
 		  // Since the reference AST ( https://spec.commonmark.org/dingus/ ) uses XML, we 
 		  // encode the predefined entities in the content to to match.
 		  content = EncodePredefinedEntities(content)
-		  mOutput.AddRow(content)
+		  mOutput.Append(content)
 		  
-		  mOutput.AddRow("</html_block>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append("</html_block>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -244,25 +244,25 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitIndentedCode(ic As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<indented_code_block>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<indented_code_block>")
+		  mOutput.Append(EOL)
 		  
-		  Dim content As String
+		  Dim content As Text
 		  For Each b As MarkdownKit.Block In ic.Children
 		    IncreaseIndent
 		    
-		    mOutput.AddRow("<text>")
-		    content = Join(b.Chars, "")
+		    mOutput.Append("<text>")
+		    content = Text.Join(b.Chars, "")
 		    If ShowWhitespace Then content = TransformWhitespace(content)
-		    mOutput.AddRow(content)
-		    mOutput.AddRow("</text>")
-		    mOutput.AddRow(EOL)
+		    mOutput.Append(content)
+		    mOutput.Append("</text>")
+		    mOutput.Append(EOL)
 		    
 		    DecreaseIndent
 		  Next b
 		  
-		  mOutput.AddRow(CurrentIndent + "</indented_code_block>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</indented_code_block>")
+		  mOutput.Append(EOL)
 		  
 		End Sub
 	#tag EndMethod
@@ -271,16 +271,16 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitInlineHTML(h As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<html_inline>")
+		  mOutput.Append(CurrentIndent + "<html_inline>")
 		  
 		  // Since the reference AST ( https://spec.commonmark.org/dingus/ ) uses XML, we 
 		  // encode the predefined entities in the content to to match.
-		  Dim content As String = Join(h.Chars, "")
+		  Dim content As Text = Text.Join(h.Chars, "")
 		  content = EncodePredefinedEntities(content)
-		  mOutput.AddRow(content)
+		  mOutput.Append(content)
 		  
-		  mOutput.AddRow("</html_inline>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append("</html_inline>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -288,11 +288,11 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitInlineImage(image As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<image destination=")
-		  mOutput.AddRow("""")
-		  mOutput.AddRow(EncodePredefinedEntities(image.Destination) + """" + " title=")
-		  mOutput.AddRow("""" + EncodePredefinedEntities(image.Title) + """" + ">")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<image destination=")
+		  mOutput.Append("""")
+		  mOutput.Append(EncodePredefinedEntities(image.Destination) + """" + " title=")
+		  mOutput.Append("""" + EncodePredefinedEntities(image.Title) + """" + ">")
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In image.Children
 		    IncreaseIndent
@@ -300,8 +300,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</image>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</image>")
+		  mOutput.Append(EOL)
 		  
 		End Sub
 	#tag EndMethod
@@ -310,16 +310,16 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitInlineLink(l As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<link destination=")
-		  mOutput.AddRow("""")
-		  mOutput.AddRow(EncodePredefinedEntities(l.Destination) + """" + " title=")
-		  mOutput.AddRow("""" + EncodePredefinedEntities(l.Title) + """" + ">")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<link destination=")
+		  mOutput.Append("""")
+		  mOutput.Append(EncodePredefinedEntities(l.Destination) + """" + " title=")
+		  mOutput.Append("""" + EncodePredefinedEntities(l.Title) + """" + ">")
+		  mOutput.Append(EOL)
 		  
 		  If l.IsAutoLink Then
 		    // The contents of autolinks are not inlines and are stored in the `Label` property of the link.
-		    mOutput.AddRow(CurrentIndent + "<text>" + EncodePredefinedEntities(l.Label) + "</text>")
-		    mOutput.AddRow(EOL)
+		    mOutput.Append(CurrentIndent + "<text>" + EncodePredefinedEntities(l.Label) + "</text>")
+		    mOutput.Append(EOL)
 		  Else
 		    For Each child As MarkdownKit.Block In l.Children
 		      IncreaseIndent
@@ -328,8 +328,8 @@ Implements Global.MarkdownKit.IRenderer
 		    Next child
 		  End If
 		  
-		  mOutput.AddRow(CurrentIndent + "</link>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</link>")
+		  mOutput.Append(EOL)
 		  
 		End Sub
 	#tag EndMethod
@@ -338,10 +338,10 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitInlineText(t As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<text>")
-		  mOutput.AddRow(Join(t.Chars, ""))
-		  mOutput.AddRow("</text>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<text>")
+		  mOutput.Append(Text.Join(t.Chars, ""))
+		  mOutput.Append("</text>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -349,20 +349,20 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitLinkReferenceDefinition(ref As MarkdownKit.LinkReferenceDefinition)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<reference_definition>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<reference_definition>")
+		  mOutput.Append(EOL)
 		  IncreaseIndent
-		  mOutput.AddRow(CurrentIndent + "<name>" + ref.Name + "</name>")
-		  mOutput.AddRow(EOL)
-		  mOutput.AddRow(CurrentIndent + "<destination>" + ref.Destination + "</destination>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<name>" + ref.Name + "</name>")
+		  mOutput.Append(EOL)
+		  mOutput.Append(CurrentIndent + "<destination>" + ref.Destination + "</destination>")
+		  mOutput.Append(EOL)
 		  If ref.Title <> "" Then
-		    mOutput.AddRow(CurrentIndent + "<title>" + ref.Title + "</title>")
-		    mOutput.AddRow(EOL)
+		    mOutput.Append(CurrentIndent + "<title>" + ref.Title + "</title>")
+		    mOutput.Append(EOL)
 		  End If
 		  DecreaseIndent
-		  mOutput.AddRow(CurrentIndent + "</reference_definition>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</reference_definition>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -373,7 +373,7 @@ Implements Global.MarkdownKit.IRenderer
 		  Const Q = """"
 		  
 		  // Construct the list header.
-		  Dim header As String
+		  Dim header As Text
 		  If theList.ListData.ListType = MarkdownKit.ListType.Ordered Then
 		    header = "type=" + Q + "ordered" + Q + " start=" + Q + _
 		    thelist.ListData.Start.ToText + Q + " tight=" + Q + _
@@ -384,8 +384,8 @@ Implements Global.MarkdownKit.IRenderer
 		    If(theList.ListData.IsTight, "true", "false") + Q
 		  End If
 		  
-		  mOutput.AddRow(CurrentIndent + "<list " + header + ">")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<list " + header + ">")
+		  mOutput.Append(EOL)
 		  
 		  For Each b As MarkdownKit.Block In theList.Children
 		    IncreaseIndent
@@ -393,8 +393,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next b
 		  
-		  mOutput.AddRow(CurrentIndent + "</list>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</list>")
+		  mOutput.Append(EOL)
 		  
 		End Sub
 	#tag EndMethod
@@ -403,8 +403,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitListItem(li As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<item>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<item>")
+		  mOutput.Append(EOL)
 		  
 		  For Each b As MarkdownKit.Block In li.Children
 		    IncreaseIndent
@@ -412,8 +412,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next b
 		  
-		  mOutput.AddRow(CurrentIndent + "</item>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</item>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -421,8 +421,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitParagraph(p As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<paragraph>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<paragraph>")
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In p.Children
 		    IncreaseIndent
@@ -430,8 +430,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</paragraph>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</paragraph>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -439,9 +439,9 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitSetextHeading(stx As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + _
+		  mOutput.Append(CurrentIndent + _
 		  "<heading level=" + """" + stx.Level.ToText + """" +  ">")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In stx.Children
 		    IncreaseIndent
@@ -449,8 +449,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</heading>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</heading>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -460,8 +460,8 @@ Implements Global.MarkdownKit.IRenderer
 		  
 		  #Pragma Unused sb
 		  
-		  mOutput.AddRow(CurrentIndent + "<softbreak />")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<softbreak />")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -469,8 +469,8 @@ Implements Global.MarkdownKit.IRenderer
 		Sub VisitStrong(s As MarkdownKit.Block)
 		  // Part of the Global.MarkdownKit.IRenderer interface.
 		  
-		  mOutput.AddRow(CurrentIndent + "<strong>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<strong>")
+		  mOutput.Append(EOL)
 		  
 		  For Each child As MarkdownKit.Block In s.Children
 		    IncreaseIndent
@@ -478,8 +478,8 @@ Implements Global.MarkdownKit.IRenderer
 		    DecreaseIndent
 		  Next child
 		  
-		  mOutput.AddRow(CurrentIndent + "</strong>")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "</strong>")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -489,8 +489,8 @@ Implements Global.MarkdownKit.IRenderer
 		  
 		  #Pragma Unused tb
 		  
-		  mOutput.AddRow(CurrentIndent + "<thematic_break />")
-		  mOutput.AddRow(EOL)
+		  mOutput.Append(CurrentIndent + "<thematic_break />")
+		  mOutput.Append(EOL)
 		End Sub
 	#tag EndMethod
 
@@ -506,7 +506,7 @@ Implements Global.MarkdownKit.IRenderer
 			  // Read only.
 			End Set
 		#tag EndSetter
-		Private EOL As String
+		Private EOL As Text
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0
@@ -518,13 +518,13 @@ Implements Global.MarkdownKit.IRenderer
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mOutput() As String
+		Private mOutput() As Text
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return Join(mOutput, "").Trim
+			  Return Text.Join(mOutput, "").Trim
 			End Get
 		#tag EndGetter
 		#tag Setter
@@ -533,7 +533,7 @@ Implements Global.MarkdownKit.IRenderer
 			  
 			End Set
 		#tag EndSetter
-		Output As String
+		Output As Text
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0
@@ -595,8 +595,8 @@ Implements Global.MarkdownKit.IRenderer
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
+			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Pretty"

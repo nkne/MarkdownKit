@@ -17,11 +17,11 @@ Protected Class CharacterRun
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function ToArray(source() As String) As String()
+		Function ToArray(source() As Text) As Text()
 		  // Copies from the passed array of characters the characters that make up 
 		  // this CharacterRun.
 		  
-		  Dim sourceUbound As Integer = source.LastRowIndex
+		  Dim sourceUbound As Integer = source.Ubound
 		  
 		  // Sanity checks.
 		  If Self.Start < 0 Or (Self.Start + Self.Length - 1) > sourceUbound Then
@@ -29,13 +29,13 @@ Protected Class CharacterRun
 		    "This CharacterRun is incompatible with the passed source array")
 		  End If
 		  
-		  Dim result() As String
+		  Dim result() As Text
 		  If Self.Length = 0 Then Return result
 		  
 		  Dim i, limit As Integer
 		  limit = Self.Start + Self.Length - 1
 		  For i = Self.Start To limit
-		    result.AddRow(source(i))
+		    result.Append(source(i))
 		  Next i
 		  
 		  Return result

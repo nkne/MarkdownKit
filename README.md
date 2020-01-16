@@ -4,35 +4,21 @@ MarkdownKit is a 100% CommonMark compliant Markdown parser for Xojo written in p
 
 MarkdownKit takes Markdown as input and generates an _abstract syntax tree_ (AST). From the AST, it is then able to render the input as HTML.
 
-## Package Contents
+This branch of the repo contains an empty iOS project containing the `MarkdownKit` module.
 
-This repo contains the following components:
-
-1. The `MarkdownKit` module.
-2. Demo application
-3. Test suites
 
 ### The Demo Application
 
-The demo app is a fully functioning Markdown editor with a live preview. It has light and dark themes (user-selectable) and will even highlight syntax within code blocks in the provided Markdown input. I have deliberately kept it light on features as its purpose is really just to demonstrate what can be achieved with MarkdownKit.
+The demo app is a fully functioning Markdown editor with a live preview. It has light and dark themes (user-selectable) and will even highlight syntax within code blocks in the provided Markdown input. I have deliberately kept it light on features as its purpose is really just to demonstrate what can be achieved with MarkdownKit. Within the `demo/Desktop` folder you'll see there are versions for API 1 and API 2.0.
 
-### The Desktop Test Suite
-
-This application contains three windows: one for running the HTML tests, one for the AST tests and a third as a simple editor. Clicking the "Run" button on the toolbar for test windows will run all 649 tests from the [CommonMark 0.29 specification][cm spec], proving the compliance of the parser. Feel free to click on an individual test to see the provided input, the expected output and the generated output.
-
-## A word about API 2.0
-
-Xojo 2019 Release 2 introduced the new Xojo framework, known as _API 2.0_. API 2.0 is an attempt by Xojo to unify code between their platforms and make method naming more consistent as well as move everything to 0-based offsets. The master branch is API 2.0 compliant. Use either the API 1.0 branch if you need to support Xojo 2019 release 1.1 or earlier or the iOS branch if you need to support iOS. You can continue to use the API 1.0 branch in projects created from Xojo 2019 Release 2 onwards but you will get deprecation warnings in the analyze project pane. 
-
-Going forwards, I will no longer support API 1.0, only API 2.0. 
 
 ## Quick Start
 
-1. Open the `MarkdownKit.xojo_project` file in the IDE (in `src/`). Copy the `MarkdownKit` module from the navigator and paste it into your own project.
+1. Open the `MarkdownKit (iOS).xojo_project` file in `src/`. Copy the `MarkdownKit` module from the navigator and paste it into your own project.
 2. Convert Markdown source to HTML with the `MarkdownKit.ToHTML()` method:
 
 ```xojo
-Dim html As String = MarkdownKit.ToHTML("Some **bold** text")
+Dim html As Text = MarkdownKit.ToHTML("Some **bold** text")
 ```
 
 ## Advanced Use

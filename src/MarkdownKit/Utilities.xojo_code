@@ -1,7 +1,7 @@
 #tag Class
 Protected Class Utilities
 	#tag Method, Flags = &h0
-		Shared Function CharInHeaderLevelRange(c As String) As Boolean
+		Shared Function CharInHeaderLevelRange(c As Text) As Boolean
 		  // Returns True if `c` is 1, 2, 3, 4, 5 or 6.
 		  
 		  Select Case c
@@ -22,11 +22,11 @@ Protected Class Utilities
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function Escaped(chars() As String, pos As Integer) As Boolean
+		Shared Function Escaped(chars() As Text, pos As Integer) As Boolean
 		  // Returns True if the character at zero-based position `pos` is escaped.
 		  // (i.e: preceded by a (non-escaped) backslash character).
 		  
-		  If pos > chars.LastRowIndex or pos = 0 Then Return False
+		  If pos > chars.Ubound or pos = 0 Then Return False
 		  
 		  If chars(pos - 1) = "\" And Not Escaped(chars, pos - 1) Then
 		    Return True
@@ -2184,49 +2184,55 @@ Protected Class Utilities
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function IsASCIIAlphaChar(c As String) As Boolean
+		Shared Function IsASCIIAlphaChar(c As Text) As Boolean
 		  // Returns True if the passed character `c` is A-Z or a-z.
 		  
-		  Select Case Asc(c)
-		  Case 65 To 90, 97 To 122
-		    Return True
-		  Else
-		    Return False
-		  End Select
+		  For Each codePoint As UInt32 In c.Codepoints
+		    Select Case codePoint
+		    Case 65 To 90, 97 To 122
+		      Return True
+		    Else
+		      Return False
+		    End Select
+		  Next codePoint
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function IsDigit(c As String) As Boolean
+		Shared Function IsDigit(c As Text) As Boolean
 		  // Returns True if the passed character `c` a digit 0-9.
 		  
-		  Select Case Asc(c)
-		  Case 48 To 57
-		    Return True
-		  Else
-		    Return False
-		  End Select
+		  For Each codePoint As UInt32 In c.Codepoints
+		    Select Case codePoint
+		    Case 48 To 57
+		      Return True
+		    Else
+		      Return False
+		    End Select
+		  Next codePoint
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function IsHexDigit(c As String) As Boolean
+		Shared Function IsHexDigit(c As Text) As Boolean
 		  // Returns True if the passed character `c` is A-F, a-f or 0-9.
 		  
-		  Select Case Asc(c)
-		  Case 65 To 70, 97 To 102, 48 To 57
-		    Return True
-		  Else
-		    Return False
-		  End Select
+		  For Each codePoint As UInt32 In c.Codepoints
+		    Select Case codePoint
+		    Case 65 To 70, 97 To 102, 48 To 57
+		      Return True
+		    Else
+		      Return False
+		    End Select
+		  Next codePoint
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function IsPunctuation(char As String) As Boolean
+		Shared Function IsPunctuation(char As Text) As Boolean
 		  Select Case char
 		  Case "!", """", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", _
 		    "/", ":", ";", "<", "=", ">", "?", "@", "[", "\", "]", "^", "_", "`", _
@@ -2240,21 +2246,23 @@ Protected Class Utilities
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function IsUppercaseASCIIChar(c As String) As Boolean
+		Shared Function IsUppercaseASCIIChar(c As Text) As Boolean
 		  // Returns True if the passed character `c` is an uppercase ASCII character.
 		  
-		  Select Case Asc(c)
-		  Case 65 To 90
-		    Return True
-		  Else
-		    Return False
-		  End Select
+		  For Each codePoint As UInt32 In c.Codepoints
+		    Select Case codePoint
+		    Case 65 To 90
+		      Return True
+		    Else
+		      Return False
+		    End Select
+		  Next codePoint
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function IsWhitespace(char As String, nonBreakingSpaceIsWhitespace As Boolean = False) As Boolean
+		Shared Function IsWhitespace(char As Text, nonBreakingSpaceIsWhitespace As Boolean = False) As Boolean
 		  // Returns True if the passed character is whitespace.
 		  // If the optional `nonBreakingSpaceIsWhitespace` is True then we also 
 		  // consider a non-breaking space (&u0A0) to be whitespace.
@@ -2274,7 +2282,7 @@ Protected Class Utilities
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Sub ReplaceEntities(chars() As String)
+		Shared Sub ReplaceEntities(chars() As Text)
 		  // Scans the characters in the passed array of characters for valid entity and numeric character 
 		  // references.
 		  // If one is found, the characters representing the reference are replaced with the 
@@ -2301,13 +2309,13 @@ Protected Class Utilities
 		  Dim start As Integer = chars.IndexOf("&")
 		  If start = -1 Or chars.IndexOf(";") = -1 Then Return
 		  
-		  Dim c As String
-		  Dim tmp() As String
+		  Dim c As Text
+		  Dim tmp() As Text
 		  Dim i As Integer = start
 		  Dim xLimit As Integer
 		  Dim codePoint As Integer
 		  Dim seenSemiColon As Boolean = False
-		  While i < chars.LastRowIndex
+		  While i < chars.Ubound
 		    Redim tmp(-1)
 		    seenSemiColon = False
 		    c = chars(i)
@@ -2316,7 +2324,7 @@ Protected Class Utilities
 		    If chars(i) <> "&" Then Return
 		    If Utilities.Escaped(chars, i) Then
 		      i = i + 1
-		      If i > chars.LastRowIndex Then Return
+		      If i > chars.Ubound Then Return
 		      // Any other potential references?
 		      start = chars.IndexOf("&", i)
 		      If start = -1 Then
@@ -2327,22 +2335,22 @@ Protected Class Utilities
 		    End If
 		    
 		    i = i + 1
-		    If i > chars.LastRowIndex Then Return
+		    If i > chars.Ubound Then Return
 		    c = chars(i)
 		    
 		    If c = "#" Then
 		      i = i + 1
-		      If i > chars.LastRowIndex Then Return
+		      If i > chars.Ubound Then Return
 		      c = chars(i)
 		      
 		      If c = "X" Then
 		        // ========== HEX REFERENCE? ==========
-		        xLimit = Xojo.Math.Min(chars.LastRowIndex, i + 7)
-		        If i + 1 > chars.LastRowIndex Then Return
+		        xLimit = Xojo.Math.Min(chars.Ubound, i + 7)
+		        If i + 1 > chars.Ubound Then Return
 		        For x As Integer = i + 1 To xLimit
 		          c = chars(x)
 		          If Utilities.IsHexDigit(c) Then
-		            tmp.AddRow(c)
+		            tmp.Append(c)
 		          ElseIf c = ";" Then
 		            seenSemiColon = True
 		            Exit
@@ -2357,16 +2365,16 @@ Protected Class Utilities
 		            End If
 		          End If
 		        Next x
-		        If seenSemiColon And tmp.LastRowIndex > -1 Then
+		        If seenSemiColon And tmp.Ubound > -1 Then
 		          // `tmp` contains the hex value of the codepoint.
 		          // Remove the characters in `chars` that make up this reference.
-		          For x As Integer = 1 To tmp.LastRowIndex + 5
-		            chars.RemoveRowAt(start)
+		          For x As Integer = 1 To tmp.Ubound + 5
+		            chars.Remove(start)
 		          Next x
-		          chars.AddRowAt(start, Text.FromUnicodeCodepoint(Integer.FromHex(Join(tmp, "").ToText)))
+		          chars.Insert(start, Text.FromUnicodeCodepoint(Integer.FromHex(Text.Join(tmp, ""))))
 		          // Any other potential references?
 		          i = start + 1
-		          If i > chars.LastRowIndex Then Return
+		          If i > chars.Ubound Then Return
 		          start = chars.IndexOf("&", i)
 		          If start = -1 Then
 		            Return
@@ -2377,7 +2385,7 @@ Protected Class Utilities
 		        Else
 		          // Any other potential references?
 		          i = i + 1
-		          If i > chars.LastRowIndex Then Return
+		          If i > chars.Ubound Then Return
 		          start = chars.IndexOf("&", i)
 		          If start = -1 Then
 		            Return
@@ -2397,12 +2405,12 @@ Protected Class Utilities
 		        End If
 		      ElseIf Utilities.IsDigit(c) Then
 		        // ========== DECIMAL REFERENCE? ==========
-		        xLimit = Xojo.Math.Min(chars.LastRowIndex, i + 6)
-		        If i + 1 > chars.LastRowIndex Then Return
+		        xLimit = Xojo.Math.Min(chars.Ubound, i + 6)
+		        If i + 1 > chars.Ubound Then Return
 		        For x As Integer = i To xLimit
 		          c = chars(x)
 		          If Utilities.IsDigit(c) Then
-		            tmp.AddRow(c)
+		            tmp.Append(c)
 		          ElseIf c = ";" Then
 		            seenSemiColon = True
 		            Exit
@@ -2418,19 +2426,19 @@ Protected Class Utilities
 		          End If
 		        Next x
 		        
-		        If seenSemiColon And tmp.LastRowIndex > -1 Then
+		        If seenSemiColon And tmp.Ubound > -1 Then
 		          // `tmp` contains the decimal value of the codepoint.
 		          // Remove the characters in `chars` that make up this reference.
-		          For x As Integer = 1 To tmp.LastRowIndex + 4
-		            chars.RemoveRowAt(start)
+		          For x As Integer = 1 To tmp.Ubound + 4
+		            chars.Remove(start)
 		          Next x
-		          codePoint = Val(Join(tmp, ""))
+		          codePoint = Integer.FromText(Text.Join(tmp, ""))
 		          // For security reasons, the code point U+0000 is replaced by U+FFFD.
 		          If codePoint = 0 Then codePoint = &hFFFD
-		          chars.AddRowAt(start, Text.FromUnicodeCodepoint(codePoint))
+		          chars.Insert(start, Text.FromUnicodeCodepoint(codePoint))
 		          // Any other potential references?
 		          i = start + 1
-		          If i > chars.LastRowIndex Then Return
+		          If i > chars.Ubound Then Return
 		          start = chars.IndexOf("&", i)
 		          If start = -1 Then
 		            Return
@@ -2441,7 +2449,7 @@ Protected Class Utilities
 		        Else
 		          // Any other potential references?
 		          i = i + 1
-		          If i > chars.LastRowIndex Then Return
+		          If i > chars.Ubound Then Return
 		          start = chars.IndexOf("&", i)
 		          If start = -1 Then
 		            Return
@@ -2464,12 +2472,12 @@ Protected Class Utilities
 		    ElseIf Utilities.IsASCIIAlphaChar(c) Or Utilities.IsDigit(c) Then
 		      // ========== ENTITY REFERENCE? ==========
 		      // The longest entity reference is 31 characters.
-		      xLimit = Xojo.Math.Min(chars.LastRowIndex, i + 30)
-		      If i + 1 > chars.LastRowIndex Then Return
+		      xLimit = Xojo.Math.Min(chars.Ubound, i + 30)
+		      If i + 1 > chars.Ubound Then Return
 		      For x As Integer = i To xLimit
 		        c = chars(x)
 		        If Utilities.IsASCIIAlphaChar(c) Or Utilities.IsDigit(c) Then
-		          tmp.AddRow(c)
+		          tmp.Append(c)
 		        ElseIf c = ";" Then
 		          seenSemiColon = True
 		          Exit
@@ -2487,18 +2495,18 @@ Protected Class Utilities
 		      If Not seenSemiColon Then Return
 		      // `tmp` contains the HTML entity reference name.
 		      // Is this a valid entity name?
-		      Dim entityName As Text = Join(tmp, "").ToText // Must be text for correct case-sensitive lookup.
+		      Dim entityName As Text = Text.Join(tmp, "")
 		      If CharacterReferences.HasKey(entityName) Then
 		        // Remove the characters in `chars` that make up this reference.
-		        For x As Integer = 1 To tmp.LastRowIndex + 3
-		          chars.RemoveRowAt(start)
+		        For x As Integer = 1 To tmp.Ubound + 3
+		          chars.Remove(start)
 		        Next x
-		        chars.AddRowAt(start, Text.FromUnicodeCodepoint(CharacterReferences.Value(entityName)))
+		        chars.Insert(start, Text.FromUnicodeCodepoint(CharacterReferences.Value(entityName)))
 		      End If
 		      
 		      // Any other potential references?
 		      i = start + 1
-		      If i > chars.LastRowIndex Then Return
+		      If i > chars.Ubound Then Return
 		      start = chars.IndexOf("&", i)
 		      If start = -1 Then
 		        Return
@@ -2522,58 +2530,58 @@ Protected Class Utilities
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Function ReplaceEntities(t As String) As String
+		Shared Function ReplaceEntities(t As Text) As Text
 		  If t.IndexOf("&") = -1 Or t.IndexOf(";") = -1 Then
 		    Return t
 		  Else
-		    Dim tmp() As String = t.Split("")
+		    Dim tmp() As Text = t.Split
 		    Utilities.ReplaceEntities(tmp)
-		    Return Join(tmp, "")
+		    Return Text.Join(tmp, "")
 		  End If
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Sub Unescape(ByRef t As String)
+		Shared Sub Unescape(ByRef t As Text)
 		  // Converts backslash escaped characters in the passed Text object to their 
 		  // literal character value.
 		  // Mutates the original value.
 		  
 		  If t.IndexOf("\") = -1 Then Return
 		  
-		  Dim chars() As String = t.Split("")
+		  Dim chars() As Text = t.Split
 		  Dim pos As Integer = 0
-		  Dim c As String
-		  Do Until pos > chars.LastRowIndex
+		  Dim c As Text
+		  Do Until pos > chars.Ubound
 		    c = chars(pos)
-		    If c = "\" And pos < chars.LastRowIndex And _
+		    If c = "\" And pos < chars.Ubound And _
 		      MarkdownKit.IsEscapable(chars(pos + 1)) Then
 		      // Remove the backslash from the array.
-		      chars.RemoveRowAt(pos)
+		      chars.Remove(pos)
 		    End If
 		    pos = pos + 1
 		  Loop
 		  
-		  t = Join(chars, "")
+		  t = Text.Join(chars, "")
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Shared Sub Unescape(chars() As String)
+		Shared Sub Unescape(chars() As Text)
 		  // Converts backslash escaped characters to their literal character value.
 		  // Mutates alters the passed array.
 		  
 		  If chars.IndexOf("\") = -1 Then Return
 		  
 		  Dim pos As Integer = 0
-		  Dim c As String
-		  Do Until pos > chars.LastRowIndex
+		  Dim c As Text
+		  Do Until pos > chars.Ubound
 		    c = chars(pos)
-		    If c = "\" And pos < chars.LastRowIndex And _
+		    If c = "\" And pos < chars.Ubound And _
 		      MarkdownKit.IsEscapable(chars(pos + 1)) Then
 		      // Remove the backslash from the array.
-		      chars.RemoveRowAt(pos)
+		      chars.Remove(pos)
 		    End If
 		    pos = pos + 1
 		  Loop

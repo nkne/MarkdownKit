@@ -1,7 +1,7 @@
 #tag Class
 Protected Class InlineImageData
 	#tag Property, Flags = &h0
-		Destination As String
+		Destination As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -9,15 +9,15 @@ Protected Class InlineImageData
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		ImageDescriptionChars() As String
+		ImageDescriptionChars() As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		LinkLabel As String
+		LinkLabel As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		LinkTitle As String
+		LinkTitle As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -30,7 +30,9 @@ Protected Class InlineImageData
 			Name="Name"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
@@ -38,12 +40,15 @@ Protected Class InlineImageData
 			Group="ID"
 			InitialValue="-2147483648"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -51,6 +56,7 @@ Protected Class InlineImageData
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
@@ -58,33 +64,47 @@ Protected Class InlineImageData
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="StartPos"
+			Visible=false
 			Group="Behavior"
 			InitialValue="-1"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="EndPos"
+			Visible=false
 			Group="Behavior"
 			InitialValue="-1"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="LinkLabel"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Destination"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="LinkTitle"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

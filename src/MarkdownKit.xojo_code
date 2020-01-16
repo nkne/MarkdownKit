@@ -1,16 +1,16 @@
 #tag Module
 Protected Module MarkdownKit
 	#tag Method, Flags = &h21
-		Private Sub AppendArray(Extends array1() As String, array2() As String)
+		Private Sub AppendArray(Extends array1() As Text, array2() As Text)
 		  // Appends the contents of array2 to array1.
 		  // Has no effect on array2 but mutates array2.
 		  
-		  Dim array2Ubound As Integer = array2.LastRowIndex
+		  Dim array2Ubound As Integer = array2.Ubound
 		  If array2Ubound < 0 Then Return
 		  
 		  Dim i As Integer
 		  For i = 0 To array2Ubound
-		    array1.AddRow(array2(i))
+		    array1.Append(array2(i))
 		  Next i
 		  
 		End Sub
@@ -36,7 +36,7 @@ Protected Module MarkdownKit
 		  // This Dictionary provides fast lookup for characters that can be 
 		  // escaped with a preceding backslash.
 		  
-		  mEscapableCharacters = New Dictionary
+		  mEscapableCharacters = New Xojo.Core.Dictionary
 		  
 		  mEscapableCharacters.Value("!") = 0
 		  mEscapableCharacters.Value("""") = 0
@@ -74,11 +74,11 @@ Protected Module MarkdownKit
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function IsBlank(Extends chars() As String) As Boolean
+		Private Function IsBlank(Extends chars() As Text) As Boolean
 		  // Returns True if this array of characters is empty or contains only whitespace.
-		  If chars.LastRowIndex = - 1 Then Return True
+		  If chars.Ubound = - 1 Then Return True
 		  
-		  Dim charsUbound As Integer = chars.LastRowIndex
+		  Dim charsUbound As Integer = chars.Ubound
 		  Dim i As Integer
 		  For i = 0 To charsUbound
 		    Select Case Chars(i)
@@ -95,51 +95,51 @@ Protected Module MarkdownKit
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function IsEscapable(char As String) As Boolean
+		Private Function IsEscapable(char As Text) As Boolean
 		  // Is the passed character a backslash-escapable character?
 		  Return mEscapableCharacters.HasKey(char)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function Peek(chars() As String, pos As Integer, char As String) As Boolean
+		Private Function Peek(chars() As Text, pos As Integer, char As Text) As Boolean
 		  // Returns True if the character at position `pos` is `char`.
 		  
-		  If pos < 0 Or pos > chars.LastRowIndex Then Return False
+		  If pos < 0 Or pos > chars.Ubound Then Return False
 		  Return If(chars(pos) = char, True, False)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub RemoveLeft(Extends source() As String, length As Integer)
+		Private Sub RemoveLeft(Extends source() As Text, length As Integer)
 		  // Removes `length` elements from the start of the passed array.
 		  
-		  If length <= 0 Or (length - 1) > source.LastRowIndex Then
+		  If length <= 0 Or (length - 1) > source.Ubound Then
 		    Raise New MarkdownKit.MarkdownException( _
 		    "Invalid parameters provided to the MarkdownKit.RemoveLeft method")
 		  End If
 		  
 		  Dim remaining As Integer = length
 		  Do Until remaining = 0
-		    source.RemoveRowAt(0)
+		    source.Remove(0)
 		    remaining = remaining - 1
 		  Loop
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub StripLeadingWhitespace(chars() As String)
+		Private Sub StripLeadingWhitespace(chars() As Text)
 		  // Takes a ByRef array of characters and removes contiguous whitespace 
 		  // characters from the beginning of it.
 		  // Whitespace characters are &u0020, &u0009.
 		  
 		  Dim i As Integer
-		  Dim c As String
-		  For i = chars.LastRowIndex DownTo 0
+		  Dim c As Text
+		  For i = chars.Ubound DownTo 0
 		    c = chars(0)
 		    Select Case c
 		    Case &u0020, &u0009, &u000A
-		      chars.RemoveRowAt(0)
+		      chars.Remove(0)
 		    Else
 		      Exit
 		    End Select
@@ -149,19 +149,19 @@ Protected Module MarkdownKit
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub StripTrailingWhitespace(chars() As String)
+		Private Sub StripTrailingWhitespace(chars() As Text)
 		  // Takes an array of characters and removes contiguous whitespace 
 		  // characters from the end of it.
 		  // Whitespace characters are &u0020, &u0009.
 		  // Mutates the passed array.
 		  
 		  Dim i As Integer
-		  Dim c As String
-		  For i = chars.LastRowIndex DownTo 0
-		    c = chars(chars.LastRowIndex)
+		  Dim c As Text
+		  For i = chars.Ubound DownTo 0
+		    c = chars(chars.Ubound)
 		    Select Case c
 		    Case &u0020, &u0009, &u000A
-		      chars.RemoveRowAt(chars.LastRowIndex)
+		      chars.Remove(chars.Ubound)
 		    Else
 		      Exit
 		    End Select
@@ -171,8 +171,8 @@ Protected Module MarkdownKit
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ToHTML(markdown As String) As String
-		  // Takes Markdown source as a String and returns it as raw HTML.
+		Protected Function ToHTML(markdown As Text) As Text
+		  // Takes Markdown source as Text and returns it as raw HTML.
 		  
 		  // Create a new Markdown document.
 		  Dim doc As New MarkdownKit.Document(markdown)
@@ -192,30 +192,8 @@ Protected Module MarkdownKit
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function ToString(Extends chars() As String, start As Integer, length As Integer) As String
-		  // Grabs `length` characters from the passed character array beginning at `start` 
-		  // and returns them as a concatenated String.
-		  // If any of the passed parameters are out of range then we return "".
-		  
-		  Dim charsUbound As Integer = chars.LastRowIndex
-		  
-		  If start < 0 Or start > charsUbound Or length <= 0 Or _
-		  (start + length - 1 > charsUbound) Then Return ""
-		  
-		  Dim limit As Integer = start + length - 1
-		  Dim tmp() As String
-		  For i As Integer = start To limit
-		    tmp.AddRow(chars(i))
-		  Next i
-		  
-		  Return Join(tmp, "")
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function ToText(Extends type As MarkdownKit.BlockType) As String
-		  // Returns a String representation of the passed MarkdownKit.BlockType.
+		Private Function ToText(Extends type As MarkdownKit.BlockType) As Text
+		  // Returns a Text representation of the passed MarkdownKit.BlockType.
 		  
 		  Select Case type
 		  Case MarkdownKit.BlockType.AtxHeading
@@ -251,8 +229,30 @@ Protected Module MarkdownKit
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function ToText(Extends chars() As Text, start As Integer, length As Integer) As Text
+		  // Grabs `length` characters from the passed character array beginning at `start` 
+		  // and returns them as concatenated Text.
+		  // If any of the passed parameters are out of range then we return "".
+		  
+		  Dim charsUbound As Integer = chars.Ubound
+		  
+		  If start < 0 Or start > charsUbound Or length <= 0 Or _
+		  (start + length - 1 > charsUbound) Then Return ""
+		  
+		  Dim limit As Integer = start + length - 1
+		  Dim tmp() As Text
+		  For i As Integer = start To limit
+		    tmp.Append(chars(i))
+		  Next i
+		  
+		  Return Text.Join(tmp, "")
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
-		Protected Function Version() As String
+		Protected Function Version() As Text
 		  Dim major As Integer = kVersionMajor
 		  Dim minor As Integer = kVersionMinor
 		  Dim bug As Integer = kVersionBug
@@ -272,12 +272,12 @@ Protected Module MarkdownKit
 		on all platforms supported by Xojo (Mac, Windows, Linux x86/ARM and iOS).
 		
 		## Usage.
-		The easiest way to convert Markdown to HTML is to use the 
-		`MarkdownKit.ToHTML()` method. This takes the Markdown source code as a String and 
-		returns the HTML as a String:
+		The easiest way to convert Markdown text to HTML is to use the 
+		`MarkdownKit.ToHTML()` method. This takes the Markdown source code as `Text` and 
+		returns the HTML as `Text`:
 		
 		```xojo
-		Dim html As String = MarkdownKit.ToHTML("**Hello** World!") // <p><strong>Hello</strong> World!</p>
+		Dim html As Text = MarkdownKit.ToHTML("**Hello** World!") // <p><strong>Hello</strong> World!</p>
 		```
 		
 		If you would like access to the abstract syntax tree (AST) created by the parser 
@@ -295,11 +295,11 @@ Protected Module MarkdownKit
 		// included renderers:
 		Dim astRenderer As New MarkdownKit.ASTRenderer
 		astRenderer.VisitDocument(doc)
-		Dim ast As String = astRenderer.Output
+		Dim ast As Text = astRenderer.Output
 		
 		Dim htmlRenderer As New MarkdownKit.HTMLRenderer
 		htmlRenderer.VisitDocument(doc)
-		Dim html As String = htmlRenderer.Output
+		Dim html As Text = htmlRenderer.Output
 		```
 		
 		One of the powerful and customisable aspects of MarkdownKit is that because you 
@@ -311,7 +311,7 @@ Protected Module MarkdownKit
 
 
 	#tag Property, Flags = &h21, Description = 412064696374696F6E617279206F6620746865206368617261637465727320746861742061726520657363617061626C65206279206120707265636564696E67206261636B736C617368
-		Private mEscapableCharacters As Dictionary
+		Private mEscapableCharacters As Xojo.Core.Dictionary
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -319,7 +319,7 @@ Protected Module MarkdownKit
 	#tag EndProperty
 
 
-	#tag Constant, Name = kVersionBug, Type = Double, Dynamic = False, Default = \"4", Scope = Protected
+	#tag Constant, Name = kVersionBug, Type = Double, Dynamic = False, Default = \"3", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = kVersionMajor, Type = Double, Dynamic = False, Default = \"1", Scope = Protected

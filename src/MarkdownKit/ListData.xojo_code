@@ -1,7 +1,7 @@
 #tag Class
 Protected Class ListData
 	#tag Property, Flags = &h0, Description = 54686520636861726163746572207573656420666F7220756E6F726465726564206C697374732E205573656420696620604C697374446174612E4C69737454797065602069732073657420746F20604C697374547970652E42756C6C6574602E
-		BulletChar As String
+		BulletChar As Text
 	#tag EndProperty
 
 	#tag Property, Flags = &h0, CompatibilityFlags = (TargetConsole and (Target32Bit or Target64Bit)) or  (TargetWeb and (Target32Bit or Target64Bit)) or  (TargetDesktop and (Target32Bit or Target64Bit)) or  (TargetIOS and (Target64Bit)), Description = 412076616C756520696E6469636174696E67207768657468657220746865206C697374206973207469676874202873756368206C697374732077696C6C206E6F742072656E646572206164646974696F6E616C206578706C696369742070617261677261706820656C656D656E7473292E
@@ -34,7 +34,9 @@ Protected Class ListData
 			Name="Name"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
@@ -42,12 +44,15 @@ Protected Class ListData
 			Group="ID"
 			InitialValue="-2147483648"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -55,6 +60,7 @@ Protected Class ListData
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
@@ -62,41 +68,47 @@ Protected Class ListData
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="MarkerOffset"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="BulletChar"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Text"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="IsTight"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Boolean"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="ListDelimiter"
-			Group="Behavior"
-			Type="MarkdownKit.ListDelimiter"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="ListType"
-			Group="Behavior"
-			Type="MarkdownKit.ListType"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Padding"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Start"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class
